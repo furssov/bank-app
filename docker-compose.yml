@@ -1,0 +1,52 @@
+version: "3.8"
+services:
+  forex:
+    container_name: forex
+    build: ./forex-service
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/currency
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      app-network:
+
+  converter:
+    container_name: converter
+    build: ./conversion-service
+    ports:
+      - "8100:8100"
+    networks:
+      app-network:
+
+  db:
+    container_name: db
+    image: postgres:13.7
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=currency
+    ports:
+      - "5433:5432"
+    networks:
+      app-network:
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d currency -p 5432" ]
+      interval: 5s
+      retries: 3
+      timeout: 5s
+
+
+networks:
+  app-network:
+    driver: bridge
+
+
+
+

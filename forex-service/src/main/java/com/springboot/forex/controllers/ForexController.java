@@ -26,9 +26,14 @@ public class ForexController {
     }
 
     @GetMapping("/from/{from}/to/{to}")
-    public ResponseEntity<ExchangeValue> getExchangeValue(@PathVariable String from, @PathVariable String to) {
+    public ResponseEntity getExchangeValue(@PathVariable String from, @PathVariable String to) {
         ExchangeValue exchangeValue = repository.findByFromAndTo(from, to);
-        exchangeValue.setPort(Integer.parseInt(environment.getProperty("local.server.port")));
-        return new ResponseEntity<>(exchangeValue, HttpStatus.OK);
+        if (exchangeValue != null) {
+            exchangeValue.setPort(Integer.parseInt(environment.getProperty("local.server.port")));
+            return new ResponseEntity<>(exchangeValue, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
     }
 }
