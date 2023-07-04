@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class UserExceptionHandler {
+public class BankExceptionHandler {
 
-    @ExceptionHandler(value = UserException.class)
-    public ResponseEntity<String> handler(UserException e) {
+    @ExceptionHandler(value = {UserException.class, BankException.class})
+    public ResponseEntity<String> handler(BankException e) {
         return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
     }
 }

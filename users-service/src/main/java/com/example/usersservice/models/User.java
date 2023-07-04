@@ -19,13 +19,9 @@ public class User {
     private String id;
 
     @Field
-    @NotBlank
-    @Size(min = 2, max = 30, message = "first name minimum size is 2, max is 30")
     private String firstName;
 
     @Field
-    @NotBlank
-    @Size(min = 2, max = 30, message = "second name minimum size is 2, max is 30")
     private String secondName;
 
     @Field
@@ -39,6 +35,7 @@ public class User {
     private String password;
 
     @Field
+    @NotNull
     @Min(value = 0, message = "amount cant be less then null")
     private BigDecimal amount;
 

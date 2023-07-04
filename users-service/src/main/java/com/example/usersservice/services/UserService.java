@@ -1,15 +1,17 @@
 package com.example.usersservice.services;
 
+import com.example.usersservice.exceptions.TransferMoneyException;
 import com.example.usersservice.exceptions.UserException;
 import com.example.usersservice.models.User;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
     User save(User user);
 
-    void deleteById(String id);
+    boolean deleteById(String id);
 
     User update(User user);
 
@@ -17,6 +19,6 @@ public interface UserService {
 
     List<User> findAll();
 
-    void transferMoney(String fromId, String toId);
+    void transferMoney(String fromId, String toId, BigDecimal amount) throws TransferMoneyException, UserException;
 
 }
