@@ -5,6 +5,7 @@
       <list>
         <option value="$PROJECT_DIR$/forex-service/pom.xml" />
         <option value="$PROJECT_DIR$/conversion-service/pom.xml" />
+        <option value="$PROJECT_DIR$/users-service/pom.xml" />
       </list>
     </option>
   </component>
