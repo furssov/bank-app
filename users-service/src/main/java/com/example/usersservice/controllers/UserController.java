@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity createUser(@RequestBody @Valid UserDTO user, Errors errors) {
+    public ResponseEntity createUser(@RequestBody @Valid UserDTO user, Errors errors) throws UserException {
         if (errors.hasErrors()) {
             return new ResponseEntity<>(errors.getAllErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST);
         }

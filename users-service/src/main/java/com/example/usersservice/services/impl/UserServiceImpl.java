@@ -5,10 +5,14 @@ import com.example.usersservice.exceptions.UserException;
 import com.example.usersservice.feign.TransferMoneyServiceProxy;
 import com.example.usersservice.models.User;
 import com.example.usersservice.repos.UserRepository;
+import com.example.usersservice.security.UserDetailsBank;
 import com.example.usersservice.services.UserService;
 import com.springboot.conversion.beans.CurrencyConversionBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final TransferMoneyServiceProxy transferMoneyServiceProxy;
     private final UserRepository repository;
@@ -29,8 +33,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(User user) {
-        return repository.save(user);
+    @Transactional
+    public User save(User user) throws UserException {
+        if (repository.findUserByUsername(user.getUsername()).isEmpty()) {
+            return repository.save(user);
+        }
+        else {
+            throw new UserException("User with such username has already exists", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
@@ -43,6 +53,17 @@ public class UserServiceImpl implements UserService {
         }
         return false;
 
+    }
+
+    @Override
+    public User getByLogin(String login) throws UserException {
+       Optional<User> user = repository.findUserByUsername(login);
+       if (user.isPresent()) {
+           return user.get();
+       }
+       else {
+           throw new UserException("Username was not found", HttpStatus.BAD_REQUEST);
+       }
     }
 
     @Override
@@ -66,8 +87,6 @@ public class UserServiceImpl implements UserService {
         return repository.findAll();
     }
 
-    //TODO
-    //Execute this method to bank service
     @Override
     @Transactional
     public void transferMoney(String fromId, String toId, BigDecimal amount) throws TransferMoneyException, UserException {
@@ -89,6 +108,17 @@ public class UserServiceImpl implements UserService {
         }
         else {
             throw new TransferMoneyException("Error while sending money", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> user = repository.findUserByUsername(username);
+        if (user.isPresent()) {
+            return new UserDetailsBank(user.get());
+        }
+        else {
+            throw new UsernameNotFoundException("No such user");
         }
     }
 }
