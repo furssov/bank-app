@@ -2,8 +2,8 @@ package com.example.usersservice.services;
 
 import com.example.usersservice.exceptions.TransferMoneyException;
 import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,7 +22,6 @@ public interface UserService {
 
     List<User> findAll();
 
-    UserDetails loadUserByUsername(String username);
-    void transferMoney(String fromId, String toId, BigDecimal amount) throws TransferMoneyException, UserException;
+    TransferMoneyResult transferMoney(String toId, BigDecimal amount) throws TransferMoneyException, UserException;
 
 }

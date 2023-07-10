@@ -1,6 +1,4 @@
 package com.example.usersservice.jwt;
-
-import com.example.usersservice.models.Role;
 import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

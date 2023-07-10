@@ -1,6 +1,5 @@
 package com.example.usersservice.jwt;
 
-import com.example.usersservice.models.Role;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

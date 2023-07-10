@@ -10,7 +10,10 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransferAmount {
+public class Transfer {
     @JsonProperty("amount")
     private BigDecimal amount;
+
+    @JsonProperty("toId")
+    private String toId;
 }

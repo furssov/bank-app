@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class BankExceptionHandler {
 
-    @ExceptionHandler(value = {UserException.class, BankException.class})
+    @ExceptionHandler(value = {UserException.class, TransferMoneyException.class})
     public ResponseEntity<String> handler(BankException e) {
         return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
     }
