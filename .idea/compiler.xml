@@ -7,12 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="conversion-service" />
-        <module name="users-service" />
+        <module name="mail-sender-service" />
         <module name="spring-boot-microservice-forex-service" />
+        <module name="users-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="conversion-service" target="17" />
+      <module name="mail-sender-service" target="17" />
       <module name="spring-boot-microservice-forex-service" target="17" />
       <module name="users-service" target="17" />
     </bytecodeTargetLevel>
@@ -20,6 +22,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="conversion-service" options="-parameters" />
+      <module name="mail-sender-service" options="-parameters" />
       <module name="spring-boot-microservice-forex-service" options="-parameters" />
       <module name="users-service" options="-parameters" />
     </option>
