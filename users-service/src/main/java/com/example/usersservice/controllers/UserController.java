@@ -1,8 +1,9 @@
 package com.example.usersservice.controllers;
 
-import com.example.usersservice.dto.UpdateUserRequest;
-import com.example.usersservice.dto.UserDTO;
+import com.example.usersservice.dto.UserRequest;
+import com.example.usersservice.dto.UserCreateRequest;
 import com.example.usersservice.dto.UserMapper;
+import com.example.usersservice.dto.UserUpdateRequest;
 import com.example.usersservice.exceptions.UserException;
 import com.example.usersservice.feign.SecureCodeProxyService;
 import com.example.usersservice.models.User;
@@ -41,11 +42,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity createUser(@RequestBody @Valid UserDTO userDTO, Errors errors) throws UserException {
+    public ResponseEntity createUser(@RequestBody @Valid UserCreateRequest userDTO, Errors errors) throws UserException {
         if (errors.hasErrors()) {
             return new ResponseEntity<>(errors.getAllErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(userService.save(UserMapper.mapForCreating(userDTO)), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.save(UserMapper.map(userDTO)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -59,11 +60,11 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserRequest userDTO, Errors errors) throws UserException {
+    public ResponseEntity updateUser(@PathVariable String id, @RequestBody @Valid UserUpdateRequest userDTO, Errors errors) throws UserException {
         if (errors.hasErrors()) {
             return new ResponseEntity<>(errors.getAllErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST);
         }
-        User user = UserMapper.mapForUpdating(userDTO);
+        User user = UserMapper.map(userDTO);
         user.setId(id);
         return new ResponseEntity<>(userService.update(user, userDTO.getCode()), HttpStatus.OK);
     }

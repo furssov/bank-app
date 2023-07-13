@@ -5,9 +5,10 @@ import com.example.usersservice.models.User;
 
 import java.math.BigDecimal;
 
+//polymorphic ad hoc functions
 public class UserMapper {
 
-    public static User mapForCreating(UserDTO dto) {
+    public static User map(UserCreateRequest dto) {
         return new User.UserBuilder()
                 .withAmount(BigDecimal.ZERO)
                 .withCardCurrency(dto.getCardCurrency())
@@ -19,7 +20,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static User mapForUpdating(UpdateUserRequest dto) {
+    public static User map(UserUpdateRequest dto) {
         return new User.UserBuilder()
                 .withUsername(dto.getUsername())
                 .withPassword(dto.getPassword())
