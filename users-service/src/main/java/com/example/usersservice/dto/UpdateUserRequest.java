@@ -11,7 +11,7 @@ import lombok.Data;
 public class UpdateUserRequest {
     @JsonProperty("username")
     @NotBlank(message = "Username must not be blank")
-    @Size(min = 2, max = 30, message = "username min size is 2, max is 30")
+    @Size(min = 2, max = 30, message = "username mi9n size is 2, max is 30")
     private String username;
 
     @JsonProperty("password")
