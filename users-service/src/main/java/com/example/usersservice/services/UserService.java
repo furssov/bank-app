@@ -16,9 +16,9 @@ public interface UserService {
 
     User getByLogin(String login) throws UserException;
 
-    User update(User user);
+    User update(User user, String secureCode) throws UserException;
 
-    Optional<User> findById(String id) throws UserException;
+    User findById(String id) throws UserException;
 
     List<User> findAll();
 

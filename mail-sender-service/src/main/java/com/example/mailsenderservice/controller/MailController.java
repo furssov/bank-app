@@ -7,10 +7,7 @@ import com.example.mailsenderservice.service.SecureCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -28,7 +25,7 @@ public class MailController {
         this.service = service;
     }
 
-    @GetMapping("/send/to/{email}")
+    @PostMapping("/send/to/{email}")
     public ResponseEntity<SecureCode> sendMail(@PathVariable String email) {
         SecureCode secureCode = new SecureCode();
         secureCode.setReceiverEmail(email);
@@ -36,12 +33,18 @@ public class MailController {
         secureCode.setSecureCode(code);
         secureCode.setExpiration(600L);
         mailSender.sendMessage(email, "Security Code", CODE_MESSAGE + code);
-        service.saveSecureCode(secureCode);
+        service.save(secureCode);
         return new ResponseEntity(secureCode, HttpStatus.OK);
     }
 
     @GetMapping("/{email}")
     public ResponseEntity<SecureCode> getCodeByEmail(@PathVariable String email) throws SecureCodeException {
-        return new ResponseEntity<>(service.findSecureCodeByReceiverEmail(email), HttpStatus.OK);
+        return new ResponseEntity<>(service.findByReceiverEmail(email), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{email}")
+    public ResponseEntity deleteSecureCode(@PathVariable String email) {
+        service.deleteSecureCodeByEmail(email);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.usersservice.services.impl;
 
+import com.example.usersservice.dto.SecureCodeResponse;
 import com.example.usersservice.exceptions.TransferMoneyException;
 import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.feign.SecureCodeProxyService;
 import com.example.usersservice.feign.TransferMoneyServiceProxy;
 import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
@@ -24,10 +26,13 @@ public class UserServiceImpl implements UserService{
     private final TransferMoneyServiceProxy transferMoneyServiceProxy;
     private final UserRepository repository;
 
+    private final SecureCodeProxyService codeProxyService;
+
     @Autowired
-    public UserServiceImpl(TransferMoneyServiceProxy transferMoneyServiceProxy, UserRepository repository) {
+    public UserServiceImpl(TransferMoneyServiceProxy transferMoneyServiceProxy, UserRepository repository, SecureCodeProxyService codeProxyService) {
         this.transferMoneyServiceProxy = transferMoneyServiceProxy;
         this.repository = repository;
+        this.codeProxyService = codeProxyService;
     }
 
     @Override
@@ -65,15 +70,34 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User update(User user) {
-        return repository.save(user);
+    @Transactional
+    public User update(User user, String secureCode) throws UserException {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        SecureCodeResponse scr = codeProxyService.getSecureCode(userEmail);
+        if (validateEmailAndCode(userEmail, scr.getReceiverEmail(), secureCode, scr.getSecureCode())) {
+            codeProxyService.deleteSecureCode(userEmail);
+            User userToDB = findById(user.getId());
+            userToDB.setUsername(user.getUsername());
+            userToDB.setPassword(user.getPassword());
+            return repository.save(userToDB);
+        }
+        else {
+            throw new UserException("Wrong secure code", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private static boolean validateEmailAndCode(String userEmail, String emailFromMailSender, String code, String codeFromMailSender) {
+        if (userEmail != null && code != null) {
+            return userEmail.equals(emailFromMailSender) && code.equals(codeFromMailSender);
+        }
+        return false;
     }
 
     @Override
-    public Optional<User> findById(String id) throws UserException {
+    public User findById(String id) throws UserException {
         Optional<User> user = repository.findById(id);
         if (user.isPresent()) {
-            return user;
+            return user.get();
         }
         else {
             throw new UserException("No such user", HttpStatus.NOT_FOUND);
@@ -85,7 +109,7 @@ public class UserServiceImpl implements UserService{
         return repository.findAll();
     }
 
-    private boolean validateAmount(BigDecimal money, BigDecimal amount) {
+    private static boolean validateAmount(BigDecimal money, BigDecimal amount) {
         if (money.subtract(amount).compareTo(BigDecimal.ZERO) >= 0 && amount.compareTo(BigDecimal.ZERO) > 0) {
             return true;
         }
@@ -98,7 +122,7 @@ public class UserServiceImpl implements UserService{
     public TransferMoneyResult transferMoney(String toId, BigDecimal amount) throws TransferMoneyException, UserException {
         Optional<User> fromUserOpt = repository.findUserByUsername((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (fromUserOpt.isPresent()) {
-            Optional<User> toUserOpt = findById(toId);
+            Optional<User> toUserOpt = repository.findById(toId);
             if (toUserOpt.isPresent()) {
                 User fromUser = fromUserOpt.get();
                 User toUser = toUserOpt.get();

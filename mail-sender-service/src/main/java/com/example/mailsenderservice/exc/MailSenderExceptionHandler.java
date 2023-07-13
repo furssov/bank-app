@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class MailSenderExceptionHandler {
 
     @ExceptionHandler(value = SecureCodeException.class)
-    public ResponseEntity<String> handler(SecureCodeException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> handle(SecureCodeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

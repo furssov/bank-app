@@ -7,17 +7,26 @@ import java.math.BigDecimal;
 
 public class UserMapper {
 
-    public static User map(UserDTO dto) {
-        User user = new User();
-        user.setFirstName(dto.getFirstName());
-        user.setSecondName(dto.getSecondName());
-        user.setUsername(dto.getUsername());
-        user.setPassword(dto.getPassword());
-        user.setRole(Role.USER);
-        user.setAmount(BigDecimal.valueOf(0));
-        user.setCardCurrency(dto.getCardCurrency());
-        return user;
+    public static User mapForCreating(UserDTO dto) {
+        return new User.UserBuilder()
+                .withAmount(BigDecimal.ZERO)
+                .withCardCurrency(dto.getCardCurrency())
+                .withFirstName(dto.getFirstName())
+                .withPassword(dto.getPassword())
+                .withRole(Role.USER)
+                .withUsername(dto.getUsername())
+                .withSecondName(dto.getSecondName())
+                .build();
     }
+
+    public static User mapForUpdating(UpdateUserRequest dto) {
+        return new User.UserBuilder()
+                .withUsername(dto.getUsername())
+                .withPassword(dto.getPassword())
+                .build();
+    }
+
+
 
 
 }

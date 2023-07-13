@@ -3,15 +3,9 @@ package com.example.mailsenderservice.service;
 import com.example.mailsenderservice.exc.SecureCodeException;
 import com.example.mailsenderservice.model.SecureCode;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface SecureCodeService {
-    List<SecureCode> getSecureCodes();
+    SecureCode save(SecureCode code);
+    SecureCode findByReceiverEmail(String email) throws SecureCodeException;
 
-    SecureCode saveSecureCode(SecureCode secureCode);
-
-    SecureCode updateSecureCode(SecureCode secureCode);
-
-    SecureCode findSecureCodeByReceiverEmail(String email) throws SecureCodeException;
+    void deleteSecureCodeByEmail(String email);
 }
