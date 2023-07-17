@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/conversion-service/conversion-service.iml" filepath="$PROJECT_DIR$/conversion-service/conversion-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/currency-microservices.iml" filepath="$PROJECT_DIR$/.idea/currency-microservices.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jwt-service/jwt-service.iml" filepath="$PROJECT_DIR$/jwt-service/jwt-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/mail-sender-service/mail-sender-service.iml" filepath="$PROJECT_DIR$/mail-sender-service/mail-sender-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/forex-service/spring-boot-microservice-forex-service.iml" filepath="$PROJECT_DIR$/forex-service/spring-boot-microservice-forex-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/users-service/users-service.iml" filepath="$PROJECT_DIR$/users-service/users-service.iml" />

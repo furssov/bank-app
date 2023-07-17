@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 @FeignClient(url = "localhost:8300", name = "mail-sender-service")
 public interface SecureCodeProxyService {
     @PostMapping("/security-code/send/to/{email}")
-    public SecureCodeResponse sendSecureCode(@PathVariable String email);
+    SecureCodeResponse sendSecureCode(@PathVariable String email);
 
     @GetMapping("/security-code/{email}")
-    public SecureCodeResponse getSecureCode(@PathVariable String email);
+    SecureCodeResponse getSecureCode(@PathVariable String email);
 
     @DeleteMapping("/security-code/{email}")
-    public void deleteSecureCode(@PathVariable String email);
+    void deleteSecureCode(@PathVariable String email);
 
 }

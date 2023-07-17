@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.math.BigDecimal;
 
 @FeignClient(name = "conversion-service", url = "localhost:8100")
-public interface TransferMoneyServiceProxy {
+public interface TransferMoneyProxyService {
 
     @GetMapping("/currency-converter/from/{from}/to/{to}/quantity/{quantity}")
-    public CurrencyConversionBean getResultOfConversion(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity);
+    CurrencyConversionBean getResultOfConversion(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity);
 }

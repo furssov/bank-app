@@ -3,7 +3,6 @@ package com.example.usersservice.controllers;
 import com.example.usersservice.exceptions.UserException;
 import com.example.usersservice.jwt.JwtRequest;
 import com.example.usersservice.jwt.JwtResponse;
-import com.example.usersservice.jwt.RefreshJwtRequest;
 import com.example.usersservice.services.impl.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,16 +28,4 @@ public class AuthController {
         return ResponseEntity.ok(jwtResponse);
     }
 
-    @PostMapping("/token")
-    public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody RefreshJwtRequest refreshRequest) throws UserException {
-        final JwtResponse token = authService.getAccessToken(refreshRequest.getRefreshToken());
-        return ResponseEntity.ok(token);
-    }
-
-
-    @PostMapping("/refresh")
-    public ResponseEntity<JwtResponse> getNewRefreshToken(@RequestBody RefreshJwtRequest request) throws UserException {
-        final JwtResponse token = authService.refresh(request.getRefreshToken());
-        return ResponseEntity.ok(token);
-    }
 }

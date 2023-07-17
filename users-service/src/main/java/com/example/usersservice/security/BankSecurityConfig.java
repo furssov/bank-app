@@ -31,7 +31,7 @@ public class BankSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/login", "/auth/token")
+                        auth.requestMatchers("/auth/login")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users")
                                 .permitAll()

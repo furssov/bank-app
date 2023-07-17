@@ -4,7 +4,7 @@ import com.example.usersservice.dto.SecureCodeResponse;
 import com.example.usersservice.exceptions.TransferMoneyException;
 import com.example.usersservice.exceptions.UserException;
 import com.example.usersservice.feigns.SecureCodeProxyService;
-import com.example.usersservice.feigns.TransferMoneyServiceProxy;
+import com.example.usersservice.feigns.TransferMoneyProxyService;
 import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
 import com.example.usersservice.repos.UserRepository;
@@ -23,13 +23,13 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService{
 
-    private final TransferMoneyServiceProxy transferMoneyServiceProxy;
+    private final TransferMoneyProxyService transferMoneyServiceProxy;
     private final UserRepository repository;
 
     private final SecureCodeProxyService codeProxyService;
 
     @Autowired
-    public UserServiceImpl(TransferMoneyServiceProxy transferMoneyServiceProxy, UserRepository repository, SecureCodeProxyService codeProxyService) {
+    public UserServiceImpl(TransferMoneyProxyService transferMoneyServiceProxy, UserRepository repository, SecureCodeProxyService codeProxyService) {
         this.transferMoneyServiceProxy = transferMoneyServiceProxy;
         this.repository = repository;
         this.codeProxyService = codeProxyService;
