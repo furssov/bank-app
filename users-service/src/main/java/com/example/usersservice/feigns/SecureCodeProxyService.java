@@ -1,4 +1,4 @@
-package com.example.usersservice.feign;
+package com.example.usersservice.feigns;
 
 import com.example.usersservice.dto.SecureCodeResponse;
 import org.springframework.cloud.openfeign.FeignClient;

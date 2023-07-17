@@ -1,11 +1,10 @@
 package com.example.usersservice.controllers;
 
-import com.example.usersservice.dto.UserRequest;
 import com.example.usersservice.dto.UserCreateRequest;
 import com.example.usersservice.dto.UserMapper;
 import com.example.usersservice.dto.UserUpdateRequest;
 import com.example.usersservice.exceptions.UserException;
-import com.example.usersservice.feign.SecureCodeProxyService;
+import com.example.usersservice.feigns.SecureCodeProxyService;
 import com.example.usersservice.models.User;
 import com.example.usersservice.services.UserService;
 import jakarta.validation.Valid;
