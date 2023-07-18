@@ -33,7 +33,7 @@ public class AuthService {
     public JwtResponse login(@NonNull JwtRequest authRequest) throws UserException {
         final User user = userService.getByLogin(authRequest.getUsername());
         if (user.getPassword().equals(authRequest.getPassword())) {
-            final String accessToken = jwtProxyService.generateJwtToken(new AuthRequest(user.getUsername(), user.getRole().name()));
+            final String accessToken = jwtProxyService.generateJwtToken(new AuthRequest(user.getUsername(), user.getRole().name(), user.getId()));
             refreshStorage.put(user.getUsername(), accessToken);
             return new JwtResponse(accessToken);
         }

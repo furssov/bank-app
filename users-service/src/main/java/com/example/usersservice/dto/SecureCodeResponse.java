@@ -3,7 +3,6 @@ package com.example.usersservice.dto;
 import lombok.Data;
 
 @Data
-public class SecureCodeResponse {
-    private String secureCode;
+public class SecureCodeResponse extends SecureCodeDto{
     private String receiverEmail;
 }

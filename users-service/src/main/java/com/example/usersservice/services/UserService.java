@@ -12,15 +12,13 @@ import java.util.Optional;
 public interface UserService {
     User save(User user) throws UserException;
 
-    boolean deleteById(String id);
+    boolean deleteById(String id, String secureCode) throws UserException;
 
     User getByLogin(String login) throws UserException;
 
     User update(User user, String secureCode) throws UserException;
 
     User findById(String id) throws UserException;
-
-    List<User> findAll();
 
     TransferMoneyResult transferMoney(String toId, BigDecimal amount) throws TransferMoneyException, UserException;
 

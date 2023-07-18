@@ -3,6 +3,7 @@ package com.example.usersservice.dto;
 import com.example.usersservice.models.CardCurrency;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class UserCreateRequest extends UserRequest{
 
 
     @JsonProperty(value = "cardCurrency", required = true)
+    @NotNull(message = "Please choose your card currency!")
     private CardCurrency cardCurrency;
 
 

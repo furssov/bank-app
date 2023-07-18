@@ -25,7 +25,6 @@ public class UserServiceImpl implements UserService{
 
     private final TransferMoneyProxyService transferMoneyServiceProxy;
     private final UserRepository repository;
-
     private final SecureCodeProxyService codeProxyService;
 
     @Autowired
@@ -48,13 +47,19 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public boolean deleteById(String id) {
+    public boolean deleteById(String id, String secureCode) throws UserException {
         Optional<User> user = repository.findById(id);
         if (user.isPresent()) {
-            repository.deleteById(id);
-            return true;
+            String userEmail = user.get().getUsername();
+            SecureCodeResponse scr = codeProxyService.getSecureCode(userEmail);
+            if (validateEmailAndCode(userEmail, scr.getReceiverEmail(), secureCode, scr.getSecureCode())) {
+                codeProxyService.deleteSecureCode(userEmail);
+                repository.deleteById(id);
+                return true;
+            }
+            else throw new UserException("Wrong secure code", HttpStatus.BAD_REQUEST);
         }
-        return false;
+        else throw new UserException("No such user", HttpStatus.BAD_REQUEST);
 
     }
 
@@ -62,6 +67,7 @@ public class UserServiceImpl implements UserService{
     public User getByLogin(String login) throws UserException {
        Optional<User> user = repository.findUserByUsername(login);
        if (user.isPresent()) {
+
            return user.get();
        }
        else {
@@ -104,10 +110,6 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    @Override
-    public List<User> findAll() {
-        return repository.findAll();
-    }
 
     private static boolean validateAmount(BigDecimal money, BigDecimal amount) {
         if (money.subtract(amount).compareTo(BigDecimal.ZERO) >= 0 && amount.compareTo(BigDecimal.ZERO) > 0) {

@@ -1,5 +1,6 @@
 package com.example.usersservice.controllers;
 
+import com.example.usersservice.dto.SecureCodeResponse;
 import com.example.usersservice.dto.UserCreateRequest;
 import com.example.usersservice.dto.UserMapper;
 import com.example.usersservice.dto.UserUpdateRequest;
@@ -11,10 +12,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -30,12 +30,8 @@ public class UserController {
         this.codeProxyService = codeProxyService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAll() {
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
-    }
-
     @GetMapping("/{id}")
+    @PreAuthorize("#id == authentication.name or hasAuthority('ADMIN')")
     public ResponseEntity<User> findById(@PathVariable String id) throws UserException {
         return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
     }
@@ -49,16 +45,14 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteById(@PathVariable String id) {
-        if (userService.deleteById(id)) {
-            return new ResponseEntity(HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
+    @PreAuthorize("#id == authentication.name")
+    public ResponseEntity deleteById(@PathVariable String id, @RequestBody SecureCodeResponse secureCodeResponse) throws UserException {
+        userService.deleteById(id, secureCodeResponse.getSecureCode());
+       return new ResponseEntity(HttpStatus.OK) ;
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("#id == authentication.name")
     public ResponseEntity updateUser(@PathVariable String id, @RequestBody @Valid UserUpdateRequest userDTO, Errors errors) throws UserException {
         if (errors.hasErrors()) {
             return new ResponseEntity<>(errors.getAllErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST);

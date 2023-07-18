@@ -14,10 +14,11 @@ import java.util.List;
 @Getter
 @Setter
 public class JwtAuthentication implements Authentication {
-
     private boolean authenticated;
     private String username;
     private String role;
+
+    private String id;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
@@ -50,6 +51,6 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return null;
+        return id;
     }
 }

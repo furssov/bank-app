@@ -22,7 +22,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateJwt(String username, String role) {
+    public String generateJwt(String username, String role, String id) {
         Date now = new Date();
         Date exp = new Date(now.getTime() + expTime);
         return Jwts.builder()
@@ -31,6 +31,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(now)
                 .signWith(secretKey)
                 .claim("role", role)
+                .claim("id", id)
                 .compact();
     }
 

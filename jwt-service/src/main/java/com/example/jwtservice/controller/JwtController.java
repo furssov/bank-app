@@ -23,7 +23,7 @@ public class JwtController {
 
     @PostMapping("/generate")
     public ResponseEntity<String> generateJwt(@RequestBody AuthRequest authRequest) {
-        return new ResponseEntity<>(jwtService.generateJwt(authRequest.getUsername(), authRequest.getRole()), HttpStatus.OK);
+        return new ResponseEntity<>(jwtService.generateJwt(authRequest.getUsername(), authRequest.getRole(), authRequest.getId()), HttpStatus.OK);
     }
 
     @PostMapping("/validate")

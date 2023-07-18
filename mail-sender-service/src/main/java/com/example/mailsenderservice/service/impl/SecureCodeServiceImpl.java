@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class SecureCodeServiceImpl implements SecureCodeService {
+public class
+SecureCodeServiceImpl implements SecureCodeService {
     private final SecureCodeRepo repo;
 
     @Autowired
@@ -30,7 +31,7 @@ public class SecureCodeServiceImpl implements SecureCodeService {
             return code.get();
         }
         else {
-            throw new SecureCodeException("No such email!");
+            throw new SecureCodeException("No such email in secure code holder!");
         }
     }
 
