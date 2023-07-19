@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Document(collection = "users")
 @Data
@@ -38,14 +40,8 @@ public class User {
     @NotNull
     private String password;
 
-    @Field
-    @NotNull
-    @Min(value = 0, message = "amount cant be less then null")
-    private BigDecimal amount;
-
-    @Field
-    @NotNull
-    private CardCurrency cardCurrency;
+    @DBRef
+    private List<BankCard> bankCards;
 
     @Field
     @NotNull
@@ -72,6 +68,11 @@ public class User {
             return this;
         }
 
+        public UserBuilder withBankCards(List<BankCard> bankCards) {
+            user.setBankCards(bankCards);
+            return this;
+        }
+
         public UserBuilder withUsername(String username) {
             user.setUsername(username);
             return this;
@@ -82,15 +83,6 @@ public class User {
             return this;
         }
 
-        public UserBuilder withAmount(BigDecimal amount) {
-            user.setAmount(amount);
-            return this;
-        }
-
-        public UserBuilder withCardCurrency(CardCurrency cardCurrency) {
-            user.setCardCurrency(cardCurrency);
-            return this;
-        }
 
         public UserBuilder withRole(Role role) {
             user.setRole(role);

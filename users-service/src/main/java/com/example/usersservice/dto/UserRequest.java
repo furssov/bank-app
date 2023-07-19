@@ -8,7 +8,7 @@ import lombok.Data;
 
 
 @Data
-public class UserRequest {
+public abstract class UserRequest {
     @JsonProperty(value = "username", required = true)
     @NotBlank(message = "Username must not be blank")
     @Size(min = 2, max = 30, message = "username min size is 2, max is 30")

@@ -5,8 +5,10 @@ import com.example.usersservice.exceptions.TransferMoneyException;
 import com.example.usersservice.exceptions.UserException;
 import com.example.usersservice.feigns.SecureCodeProxyService;
 import com.example.usersservice.feigns.TransferMoneyProxyService;
+import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
+import com.example.usersservice.repos.BankRepository;
 import com.example.usersservice.repos.UserRepository;
 import com.example.usersservice.services.UserService;
 import com.springboot.conversion.beans.CurrencyConversionBean;
@@ -17,20 +19,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService{
 
     private final TransferMoneyProxyService transferMoneyServiceProxy;
     private final UserRepository repository;
+    private final BankRepository bankRepository;
     private final SecureCodeProxyService codeProxyService;
 
     @Autowired
-    public UserServiceImpl(TransferMoneyProxyService transferMoneyServiceProxy, UserRepository repository, SecureCodeProxyService codeProxyService) {
+    public UserServiceImpl(TransferMoneyProxyService transferMoneyServiceProxy, UserRepository repository, BankRepository bankRepository, SecureCodeProxyService codeProxyService) {
         this.transferMoneyServiceProxy = transferMoneyServiceProxy;
         this.repository = repository;
+        this.bankRepository = bankRepository;
         this.codeProxyService = codeProxyService;
     }
 
@@ -121,31 +124,69 @@ public class UserServiceImpl implements UserService{
     }
     @Override
     @Transactional
-    public TransferMoneyResult transferMoney(String toId, BigDecimal amount) throws TransferMoneyException, UserException {
-        Optional<User> fromUserOpt = repository.findUserByUsername((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if (fromUserOpt.isPresent()) {
-            Optional<User> toUserOpt = repository.findById(toId);
-            if (toUserOpt.isPresent()) {
-                User fromUser = fromUserOpt.get();
-                User toUser = toUserOpt.get();
-                CurrencyConversionBean conversion = transferMoneyServiceProxy
-                        .getResultOfConversion(fromUser.getCardCurrency().name(), toUser.getCardCurrency().name(), amount);
-                if (conversion != null) {
-                    if (validateAmount(fromUser.getAmount(), amount)) {
-                        fromUser.setAmount(fromUser.getAmount().subtract(amount));
-                        toUser.setAmount(toUser.getAmount().add(conversion.getTotalAmount()));
-                        repository.save(fromUser);
-                        repository.save(toUser);
-                        return new TransferMoneyResult(fromUser.getId(), fromUser.getFirstName(), fromUser.getSecondName(),
-                                toUser.getId(), toUser.getFirstName(), toUser.getSecondName(), amount, fromUser.getCardCurrency().name());
-                    } else throw new TransferMoneyException("Transferring money exception", HttpStatus.BAD_REQUEST);
-                } else
-                    throw new TransferMoneyException("Such conversion is not available right now", HttpStatus.BAD_REQUEST);
-            } else {
-                throw new UserException("No user with such id", HttpStatus.BAD_REQUEST);
-            }
+    public TransferMoneyResult transferMoney(String fromCard, BigDecimal amount, String toCard) throws TransferMoneyException, UserException {
+      Optional<User> user = repository.findById(SecurityContextHolder.getContext().getAuthentication().getName());
+
+      if (user.isPresent()) {
+          User userFrom = user.get();
+          Optional<BankCard> bankCardFromOpt = userFrom.getBankCards()
+                  .stream()
+                  .filter(bankCard -> bankCard.getCardNumber().equals(fromCard))
+                  .findFirst();
+          if (bankCardFromOpt.isPresent()) {
+              BankCard bankCardFrom = bankCardFromOpt.get();
+              Optional<BankCard> bankCardToOpt = bankRepository.findBankCardByCardNumber(toCard);
+              if (bankCardToOpt.isPresent()) {
+                  BankCard bankCardTo = bankCardToOpt.get();
+                  CurrencyConversionBean ccb = transferMoneyServiceProxy.getResultOfConversion(bankCardFrom.getCardCurrency().name(),
+                          bankCardTo.getCardCurrency().name(), amount);
+                  synchronized (bankCardFrom) {
+                      BigDecimal fromAmount = bankCardFrom.getAmount();
+                      if (validateAmount(fromAmount, amount)) {
+                          synchronized (bankCardTo) {
+                              bankCardFrom.setAmount(fromAmount.subtract(amount));
+                              bankRepository.save(bankCardFrom);
+                              BigDecimal toAmount = bankCardTo.getAmount();
+                              bankCardTo.setAmount(toAmount.add(ccb.getTotalAmount()));
+                              bankRepository.save(bankCardTo);
+                          }
+                          return new TransferMoneyResult(bankCardFrom.getCardNumber(), userFrom.getFirstName(), userFrom.getSecondName(),
+                                  bankCardTo.getCardNumber(), bankCardTo.getUser().getFirstName(), bankCardTo.getUser().getSecondName(), ccb.getTotalAmount(), bankCardTo.getCardCurrency().name());
+                      }
+                      else {
+                          throw new TransferMoneyException("Not enough money on your card", HttpStatus.BAD_REQUEST);
+                      }
+                  }
+              }
+              else {
+                  throw new TransferMoneyException("No such card", HttpStatus.BAD_REQUEST);
+              }
+          }
+          else {
+              throw new TransferMoneyException("You don't have such card", HttpStatus.BAD_REQUEST);
+          }
+      }
+      else {
+          throw new UserException("No such user", HttpStatus.UNAUTHORIZED);
+      }
+    }
+
+    @Override
+    @Transactional
+    public boolean cardRelease(BankCard bankCard) {
+        Optional<User> user = repository.findById(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (user.isPresent()) {
+            List<BankCard> bankCards = new ArrayList<>(user.get().getBankCards());
+           //TODO generating/validating
+            bankCard.setCardNumber(UUID.randomUUID().toString());
+            bankCard.setUser(user.get());
+            bankRepository.save(bankCard);
+            bankCards.add(bankCard);
+            user.get().setBankCards(bankCards);
+            repository.save(user.get());
+            return true;
         }
-        return new TransferMoneyResult();
+        return false;
     }
 
 

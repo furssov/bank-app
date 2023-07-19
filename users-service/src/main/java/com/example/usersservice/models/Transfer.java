@@ -11,9 +11,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Transfer {
+    @JsonProperty("fromCard")
+    private String fromCard;
+
     @JsonProperty("amount")
     private BigDecimal amount;
 
-    @JsonProperty("toId")
-    private String toId;
+    @JsonProperty("toCard")
+    private String toCard;
 }

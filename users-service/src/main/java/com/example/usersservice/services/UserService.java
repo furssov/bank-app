@@ -1,13 +1,14 @@
 package com.example.usersservice.services;
 
+import com.example.usersservice.dto.BankCardDto;
 import com.example.usersservice.exceptions.TransferMoneyException;
 import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+
 
 public interface UserService {
     User save(User user) throws UserException;
@@ -20,6 +21,8 @@ public interface UserService {
 
     User findById(String id) throws UserException;
 
-    TransferMoneyResult transferMoney(String toId, BigDecimal amount) throws TransferMoneyException, UserException;
+    TransferMoneyResult transferMoney(String fromCard, BigDecimal amount, String toCard) throws TransferMoneyException, UserException;
+
+    boolean cardRelease(BankCard bankCard);
 
 }

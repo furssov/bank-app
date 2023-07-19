@@ -24,10 +24,4 @@ public class UserCreateRequest extends UserRequest{
     @Size(min = 2, max = 30, message = "second name minimum size is 2, max is 30")
     private String secondName;
 
-
-    @JsonProperty(value = "cardCurrency", required = true)
-    @NotNull(message = "Please choose your card currency!")
-    private CardCurrency cardCurrency;
-
-
 }

@@ -10,10 +10,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransferMoneyResult {
-    private String bankIdFrom;
+    private String bankCardFrom;
     private String fromFirstName;
     private String fromSecondName;
-    private String bankIdTo;
+    private String bankCardTo;
     private String toFirstName;
     private String toSecondName;
     private BigDecimal amount;
