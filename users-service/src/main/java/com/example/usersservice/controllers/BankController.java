@@ -26,7 +26,7 @@ public class BankController {
     private final BankMapper bankMapper;
 
     @Autowired
-    public BankController(UserService userService, @Qualifier("cardMapper") BankMapper bankMapper) {
+    public BankController(@Qualifier("userServiceImpl") UserService userService, @Qualifier("cardMapper") BankMapper bankMapper) {
         this.userService = userService;
         this.bankMapper = bankMapper;
     }

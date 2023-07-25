@@ -1,8 +1,15 @@
 package com.example.usersservice.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+
 public class SecureCodeResponse extends SecureCodeDto{
+    @Getter
     private String receiverEmail;
+    public SecureCodeResponse(String code, String email) {
+        super(code);
+        receiverEmail = email;
+    }
 }

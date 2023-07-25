@@ -10,6 +10,7 @@ import com.example.usersservice.models.User;
 import com.example.usersservice.services.UserService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class AuthService {
     private final JwtProxyService jwtProxyService;
 
     @Autowired
-    public AuthService(UserService userService, JwtProxyService jwtProxyService) {
+    public AuthService(@Qualifier("userServiceImpl") UserService userService, JwtProxyService jwtProxyService) {
         this.userService = userService;
         this.jwtProxyService = jwtProxyService;
     }

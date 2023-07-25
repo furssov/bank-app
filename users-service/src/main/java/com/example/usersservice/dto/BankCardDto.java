@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 public class BankCardDto {
-
     @JsonProperty("pinCode")
     @NotBlank(message = "Please, enter your pin code")
     @Size(min = 4, max = 4, message = "Pin code wrong format")

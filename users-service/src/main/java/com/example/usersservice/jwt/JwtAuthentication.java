@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 public class JwtAuthentication implements Authentication {
     private boolean authenticated;
+    @Setter
     private String username;
     private String role;
 

@@ -26,7 +26,7 @@ public class UserController {
     private final BankMapper bankMapper;
 
     @Autowired
-    public UserController(UserService userService, SecureCodeProxyService codeProxyService,@Qualifier("userMapper") BankMapper bankMapper) {
+    public UserController(@Qualifier("userServiceImpl") UserService userService, SecureCodeProxyService codeProxyService, @Qualifier("userMapper") BankMapper bankMapper) {
         this.userService = userService;
         this.codeProxyService = codeProxyService;
         this.bankMapper = bankMapper;
