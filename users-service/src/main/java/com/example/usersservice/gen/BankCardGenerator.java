@@ -1,5 +1,7 @@
 package com.example.usersservice.gen;
 
 public interface BankCardGenerator {
-    String generateBankCard(int digits);
+    String generateBankCardNumber();
+    String generateBankCardCvv();
+    String generateBankCardPinCode();
 }

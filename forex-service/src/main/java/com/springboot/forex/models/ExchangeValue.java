@@ -26,5 +26,4 @@ public class ExchangeValue {
 
     private BigDecimal conversionMultiple;
 
-    private int port;
 }

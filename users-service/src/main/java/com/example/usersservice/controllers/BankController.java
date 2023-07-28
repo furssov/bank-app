@@ -1,12 +1,14 @@
 package com.example.usersservice.controllers;
 
 import com.example.usersservice.dto.BankCardDto;
+import com.example.usersservice.exceptions.CardReleaseException;
 import com.example.usersservice.mappers.BankMapper;
 import com.example.usersservice.exceptions.TransferMoneyException;
 import com.example.usersservice.exceptions.UserException;
 import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.Transfer;
 import com.example.usersservice.models.TransferMoneyResult;
+import com.example.usersservice.services.BankService;
 import com.example.usersservice.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,28 +23,29 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/operations")
 public class BankController {
 
-    private final UserService userService;
+
+    private final BankService bankService;
 
     private final BankMapper bankMapper;
 
     @Autowired
-    public BankController(@Qualifier("userServiceImpl") UserService userService, @Qualifier("cardMapper") BankMapper bankMapper) {
-        this.userService = userService;
+    public BankController(@Qualifier("bankServiceImpl") BankService bankService, @Qualifier("cardMapper") BankMapper bankMapper) {
+        this.bankService = bankService;
         this.bankMapper = bankMapper;
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<TransferMoneyResult> transferMoney(@RequestBody Transfer transfer) throws TransferMoneyException, UserException {
-        TransferMoneyResult tmr = userService.transferMoney(transfer.getFromCard(), transfer.getAmount(), transfer.getToCard());
+    public ResponseEntity<TransferMoneyResult> transferMoney(@RequestBody Transfer transfer) throws Throwable {
+        TransferMoneyResult tmr = bankService.transferMoney(transfer.getFromCard(), transfer.getAmount(), transfer.getToCard());
         return new ResponseEntity<>(tmr, HttpStatus.OK);
     }
 
     @PostMapping("/bank-card")
-    public ResponseEntity createBankCard(@RequestBody @Valid BankCardDto bankCardDto, Errors errors) {
+    public ResponseEntity createBankCard(@RequestBody @Valid BankCardDto bankCardDto, Errors errors) throws CardReleaseException, UserException {
         if (errors.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        return userService.cardRelease((BankCard) bankMapper.map(bankCardDto)) ? new ResponseEntity(HttpStatus.OK) : new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return bankService.cardRelease((BankCard) bankMapper.map(bankCardDto)) ? new ResponseEntity(HttpStatus.OK) : new ResponseEntity(HttpStatus.BAD_REQUEST);
 
     }
 

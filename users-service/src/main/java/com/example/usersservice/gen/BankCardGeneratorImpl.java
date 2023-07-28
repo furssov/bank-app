@@ -6,8 +6,23 @@ import java.util.Random;
 
 @Component
 public class BankCardGeneratorImpl implements BankCardGenerator {
+
     @Override
-    public String generateBankCard(int digits) {
+    public String generateBankCardNumber() {
+        return generateRandomNumber(16);
+    }
+
+    @Override
+    public String generateBankCardCvv() {
+        return generateRandomNumber(3);
+    }
+
+    @Override
+    public String generateBankCardPinCode() {
+        return generateRandomNumber(4);
+    }
+
+    private String generateRandomNumber(int digits) {
         Random random = new Random();
         StringBuilder stringBuilder  = new StringBuilder();
         int count = 0;
@@ -17,5 +32,4 @@ public class BankCardGeneratorImpl implements BankCardGenerator {
         }
         return stringBuilder.toString();
     }
-
 }

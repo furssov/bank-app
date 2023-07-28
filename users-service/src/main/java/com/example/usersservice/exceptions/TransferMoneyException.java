@@ -8,4 +8,6 @@ public class TransferMoneyException extends BankException{
         super(message, httpStatus);
     }
 
+    public TransferMoneyException(String message) {super(message);}
+
 }

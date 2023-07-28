@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,8 +24,8 @@ public class BankCard {
     @Id
     private String id;
 
-    @Field
     @CreditCardNumber
+    @Field
     private String cardNumber;
 
     @Field
@@ -43,6 +44,7 @@ public class BankCard {
     @NotNull
     @Min(value = 0, message = "Amount can't be less then zero")
     private BigDecimal amount;
+
 
     @DBRef
     private User user;

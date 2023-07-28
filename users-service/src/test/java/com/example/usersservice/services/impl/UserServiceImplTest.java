@@ -31,9 +31,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,12 +43,12 @@ class UserServiceImplTest {
     @TestConfiguration
     static class UserServiceTestBean {
         @Bean
-        public UserService service() {
+        public UserService userServiceTestBean() {
             return new UserServiceImpl();
         }
     }
 
-    @Qualifier("service")
+    @Qualifier("userServiceTestBean")
     @Autowired
     private UserService userService;
 
@@ -56,19 +56,7 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     @MockBean
-    private TransferMoneyProxyService transferMoneyProxyService;
-
-    @MockBean
-    private BankRepository bankRepository;
-
-    @MockBean
     private SecureCodeProxyService secureCodeProxyService;
-
-    @Autowired
-    private BankCardGenerator bankCardGenerator;
-
-    @Autowired
-    private BankCardValidator bankCardValidator;
 
     @MockBean
     private Authentication authentication;
@@ -199,62 +187,6 @@ class UserServiceImplTest {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, ue.getHttpStatus());
     }
 
-    @Test
-    void transferMoney() throws TransferMoneyException, UserException {
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String fromCard = bankCardGenerator.generateBankCard(16);
-        String toCard = bankCardGenerator.generateBankCard(16);
-        BigDecimal amount = BigDecimal.valueOf(150L);
 
 
-        BankCard fromBankCard = BankCard.builder()
-                .cardNumber(fromCard)
-                .cardCurrency(CardCurrency.EUR)
-                .amount(amount)
-                .build();
-
-        BankCard toBankCard = BankCard.builder()
-                .cardNumber(toCard)
-                .cardCurrency(CardCurrency.EUR)
-                .amount(amount)
-                .build();
-
-        String fromUserId = UUID.randomUUID().toString();
-         User fromUser = new User.UserBuilder()
-                .withId(fromUserId)
-                .withBankCards(List.of(fromBankCard))
-                .withFirstName("Andrii")
-                .build();
-
-         fromBankCard.setUser(fromUser);
-
-        String toUserId = UUID.randomUUID().toString();
-        User toUser = new User.UserBuilder()
-                .withId(toUserId)
-                .withBankCards(List.of(toBankCard))
-                .withFirstName("Julia")
-                .build();
-
-        toBankCard.setUser(toUser);
-
-        Mockito.when(authentication.getName()).thenReturn(fromUserId);
-        Mockito.when(userRepository.findById(fromUserId)).thenReturn(Optional.of(fromUser));
-        Mockito.when(bankRepository.findBankCardByCardNumber(toCard)).thenReturn(Optional.of(toBankCard));
-        CurrencyConversionBean ccb = new CurrencyConversionBean(1l,
-                CardCurrency.EUR.name(), CardCurrency.EUR.name(), BigDecimal.valueOf(1), BigDecimal.valueOf(150), BigDecimal.valueOf(150), 0);
-        Mockito.when(transferMoneyProxyService.getResultOfConversion(fromBankCard.getCardCurrency().name(),
-                toBankCard.getCardCurrency().name(), amount)).thenReturn(ccb);
-        Mockito.when(bankRepository.save(fromBankCard)).thenReturn(fromBankCard);
-        Mockito.when(bankRepository.save(toBankCard)).thenReturn(toBankCard);
-
-        TransferMoneyResult result = new TransferMoneyResult(fromBankCard.getCardNumber(), fromUser.getFirstName(), fromUser.getSecondName(),
-                toBankCard.getCardNumber(), toUser.getFirstName(), toUser.getSecondName(), ccb.getTotalAmount(), toBankCard.getCardCurrency().name());
-
-        Assertions.assertEquals(result, userService.transferMoney(fromCard, amount, toCard));
-
-        Assertions.assertEquals(BigDecimal.valueOf(0), fromBankCard.getAmount());
-        Assertions.assertEquals(BigDecimal.valueOf(300), toBankCard.getAmount());
-
-
-    }
 }

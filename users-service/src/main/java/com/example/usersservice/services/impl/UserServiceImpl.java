@@ -27,18 +27,11 @@ import java.util.*;
 public class UserServiceImpl implements UserService{
 
     @Autowired
-    private TransferMoneyProxyService transferMoneyServiceProxy;
-    @Autowired
     private UserRepository repository;
     @Autowired
     private BankRepository bankRepository;
     @Autowired
     private SecureCodeProxyService codeProxyService;
-    @Autowired
-    private BankCardGenerator bankCardGenerator;
-    @Autowired
-    private BankCardValidator bankCardValidator;
-
 
     @Override
     @Transactional
@@ -119,87 +112,4 @@ public class UserServiceImpl implements UserService{
             throw new UserException("No such user", HttpStatus.NOT_FOUND);
         }
     }
-
-    //TODO review
-    @Override
-    @Transactional
-    public TransferMoneyResult transferMoney(String fromCard, BigDecimal amount, String toCard) throws TransferMoneyException, UserException {
-      Optional<User> user = repository.findById(SecurityContextHolder.getContext().getAuthentication().getName());
-      if (user.isPresent()) {
-          User userFrom = user.get();
-          //TODO extract to method
-          Optional<BankCard> bankCardFromOpt = userFrom.getBankCards()
-                  .stream()
-                  .filter(bankCard -> bankCard.getCardNumber().equals(fromCard))
-                  .findFirst();
-          if (bankCardFromOpt.isPresent()) {
-              BankCard bankCardFrom = bankCardFromOpt.get();
-              Optional<BankCard> bankCardToOpt = bankRepository.findBankCardByCardNumber(toCard);
-              if (bankCardToOpt.isPresent()) {
-                  BankCard bankCardTo = bankCardToOpt.get();
-                  CurrencyConversionBean ccb = transferMoneyServiceProxy.getResultOfConversion(bankCardFrom.getCardCurrency().name(),
-                          bankCardTo.getCardCurrency().name(), amount);
-                  synchronized (bankCardFrom) {
-                      BigDecimal fromAmount = bankCardFrom.getAmount();
-                      if (bankCardValidator.validateAmount(fromAmount, amount)) {
-                          synchronized (bankCardTo) {
-                              bankCardFrom.setAmount(fromAmount.subtract(amount));
-                              bankRepository.save(bankCardFrom);
-                              BigDecimal toAmount = bankCardTo.getAmount();
-                              bankCardTo.setAmount(toAmount.add(ccb.getTotalAmount()));
-                              bankRepository.save(bankCardTo);
-                          }
-                          return new TransferMoneyResult(bankCardFrom.getCardNumber(), userFrom.getFirstName(), userFrom.getSecondName(),
-                                  bankCardTo.getCardNumber(), bankCardTo.getUser().getFirstName(), bankCardTo.getUser().getSecondName(), ccb.getTotalAmount(), bankCardTo.getCardCurrency().name());
-                      }
-                      else {
-                          throw new TransferMoneyException("Not enough money on your card", HttpStatus.BAD_REQUEST);
-                      }
-                  }
-              }
-              else {
-                  throw new TransferMoneyException("No such card", HttpStatus.BAD_REQUEST);
-              }
-          }
-          else {
-              throw new TransferMoneyException("You don't have such card", HttpStatus.BAD_REQUEST);
-          }
-      }
-      else {
-          throw new UserException("No such user", HttpStatus.UNAUTHORIZED);
-      }
-    }
-
-    @Override
-    @Transactional
-    public boolean cardRelease(BankCard bankCard) {
-        Optional<User> user = repository.findById(SecurityContextHolder.getContext().getAuthentication().getName());
-        if (user.isPresent()) {
-            List<BankCard> bankCards = new ArrayList<>(user.get().getBankCards());
-            String generatedBankCard = bankCardGenerator.generateBankCard(16);
-            String generatedCvv = bankCardGenerator.generateBankCard(3);
-            if (bankCardValidator.validateBankCard(
-                    bankRepository.findAll(),
-                    generatedBankCard,
-                    bankCard.getCardCurrency(),
-                    generatedCvv)) {
-
-                bankCard.setCardNumber(generatedBankCard);
-                bankCard.setCvv(generatedCvv);
-                bankCard.setUser(user.get());
-
-                bankRepository.save(bankCard);
-                bankCards.add(bankCard);
-                user.get().setBankCards(bankCards);
-                repository.save(user.get());
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
-
-
-
-
 }

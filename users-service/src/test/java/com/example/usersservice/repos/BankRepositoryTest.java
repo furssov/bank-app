@@ -3,10 +3,13 @@ package com.example.usersservice.repos;
 import com.example.usersservice.gen.BankCardGenerator;
 import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.CardCurrency;
+import com.mongodb.DuplicateKeyException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.TestPropertySource;
@@ -15,15 +18,18 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+
 @SpringBootTest
-@TestPropertySource("classpath:test.properties")
+@TestPropertySource("classpath:application-test.properties")
 class BankRepositoryTest {
 
     private final BankRepository bankRepository;
     private final MongoTemplate mongoTemplate;
-
-
     private final BankCardGenerator bankCardGenerator;
+
+    @Value("${mongo.name.cards}")
+    private String cardsCol;
+
 
     @Autowired
     BankRepositoryTest(BankRepository bankRepository, MongoTemplate mongoTemplate, BankCardGenerator bankCardGenerator) {
@@ -32,13 +38,18 @@ class BankRepositoryTest {
         this.bankCardGenerator = bankCardGenerator;
     }
 
+    @AfterEach
+    void setUp() {
+        mongoTemplate.dropCollection(cardsCol);
+    }
+
     @Test
     void create() {
         int quantity = 10;
         populate(quantity);
-        List<BankCard> bankCards = bankRepository.findAll();
-        Assertions.assertEquals(quantity, bankCards.size());
+        Assertions.assertEquals(quantity, bankRepository.findAll().size());
     }
+
 
     @Test
     void read() {
@@ -59,7 +70,7 @@ class BankRepositoryTest {
         populate(quantity);
         Assertions.assertEquals(quantity, bankRepository.findAll().size());
         BankCard bankCard = bankRepository.findAll().get(3);
-        bankCard.setCardNumber(bankCardGenerator.generateBankCard(16));
+        bankCard.setCardNumber(bankCardGenerator.generateBankCardNumber());
         Assertions.assertEquals(Optional.empty(), bankRepository.findBankCardByCardNumber(bankCard.getCardNumber()));
         bankRepository.save(bankCard);
         Assertions.assertEquals(bankCard, bankRepository.findBankCardByCardNumber(bankCard.getCardNumber()).get());
@@ -101,17 +112,14 @@ class BankRepositoryTest {
     private void populate(int quantity) {
         for (int i = 0; i < quantity; i++) {
             bankRepository.save(BankCard.builder()
-                    .cardNumber(bankCardGenerator.generateBankCard(16))
+                    .cardNumber(bankCardGenerator.generateBankCardNumber())
                     .amount(BigDecimal.valueOf(i))
-                    .pinCode(bankCardGenerator.generateBankCard(4))
-                    .cvv(bankCardGenerator.generateBankCard(3))
+                    .pinCode(bankCardGenerator.generateBankCardPinCode())
+                    .cvv(bankCardGenerator.generateBankCardCvv())
                     .cardCurrency(CardCurrency.UAH)
                     .build());
         }
     }
 
-    @AfterEach
-    void aVoid() {
-        mongoTemplate.dropCollection("bankCards");
-    }
+
 }

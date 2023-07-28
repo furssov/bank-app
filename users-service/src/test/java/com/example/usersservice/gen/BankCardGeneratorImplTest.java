@@ -20,13 +20,14 @@ class BankCardGeneratorImplTest {
     private BankCardGenerator bankCardGenerator;
 
     @Test
-    void generateBankCard() {
+    void generateBankCardNumber() {
         List<String> bankCardsNumbers = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
-            bankCardsNumbers.add(bankCardGenerator.generateBankCard(16));
+            bankCardsNumbers.add(bankCardGenerator.generateBankCardNumber());
         }
         List<String> bcWithoutDuplicates = bankCardsNumbers.stream().distinct().collect(Collectors.toList());
 
         Assertions.assertEquals(bcWithoutDuplicates, bankCardsNumbers);
     }
+
 }

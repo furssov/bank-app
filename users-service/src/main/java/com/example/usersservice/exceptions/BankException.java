@@ -10,6 +10,10 @@ public abstract class BankException extends Exception{
         this.httpStatus = httpStatus;
     }
 
+    public BankException(String message) {
+        super(message);
+    }
+
     public HttpStatus getHttpStatus() {
         return httpStatus;
     }

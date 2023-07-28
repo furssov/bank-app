@@ -21,8 +21,5 @@ public interface UserService {
 
     User findById(String id) throws UserException;
 
-    TransferMoneyResult transferMoney(String fromCard, BigDecimal amount, String toCard) throws TransferMoneyException, UserException;
-
-    boolean cardRelease(BankCard bankCard);
 
 }

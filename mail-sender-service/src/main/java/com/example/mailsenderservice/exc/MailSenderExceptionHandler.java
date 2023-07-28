@@ -10,6 +10,6 @@ public class MailSenderExceptionHandler {
 
     @ExceptionHandler(value = SecureCodeException.class)
     public ResponseEntity<String> handle(SecureCodeException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

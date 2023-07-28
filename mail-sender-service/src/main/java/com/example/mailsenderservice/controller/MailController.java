@@ -1,6 +1,7 @@
 package com.example.mailsenderservice.controller;
 
 import com.example.mailsenderservice.exc.SecureCodeException;
+import com.example.mailsenderservice.gen.MessageGenerator;
 import com.example.mailsenderservice.model.SecureCode;
 import com.example.mailsenderservice.service.MailSender;
 import com.example.mailsenderservice.service.SecureCodeService;
@@ -8,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/security-code")
@@ -19,20 +18,19 @@ public class MailController {
     private final MailSender mailSender;
     private final SecureCodeService service;
 
+    private final MessageGenerator messageGenerator;
+
     @Autowired
-    public MailController(MailSender mailSender, SecureCodeService service) {
+    public MailController(MailSender mailSender, SecureCodeService service, MessageGenerator messageGenerator) {
         this.mailSender = mailSender;
         this.service = service;
+        this.messageGenerator = messageGenerator;
     }
 
     @PostMapping("/send/to/{email}")
     public ResponseEntity<SecureCode> sendMail(@PathVariable String email) {
-        SecureCode secureCode = new SecureCode();
-        secureCode.setReceiverEmail(email);
-        String code = email.hashCode() + UUID.randomUUID().toString();
-        secureCode.setSecureCode(code);
-        secureCode.setExpiration(600L);
-        mailSender.sendMessage(email, "Security Code", CODE_MESSAGE + code);
+        SecureCode secureCode = messageGenerator.generate(email);
+        mailSender.sendMessage(email, "Security Code", CODE_MESSAGE + secureCode.getSecureCode());
         service.save(secureCode);
         return new ResponseEntity(secureCode, HttpStatus.OK);
     }

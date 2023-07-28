@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.TestPropertySource;
@@ -14,15 +15,18 @@ import java.util.List;
 import java.util.Optional;
 
 //TODO refactoring/comments
-@TestPropertySource("classpath:test.properties")
+@TestPropertySource("classpath:application-test.properties")
 @SpringBootTest
 class UserRepositoryTest {
     private final UserRepository userRepository;
     private final MongoTemplate mongoTemplate;
     private final BankRepository bankRepository;
 
-    private static final String COL_NAME = "users";
+    @Value("${mongo.name.users}")
+    private String usersCol;
 
+    @Value("${mongo.name.cards}")
+    private String cardsCol;
 
     @Autowired
     UserRepositoryTest(UserRepository userRepository, MongoTemplate mongoTemplate, BankRepository bankRepository) {
@@ -37,11 +41,11 @@ class UserRepositoryTest {
         populate(quantity);
         List<User> users = userRepository.findAll();
         Assertions.assertEquals(quantity, userRepository.findAll().size());
-        Assertions.assertEquals(quantity, bankRepository.findAll().size());
         Assertions.assertEquals("Name54", users.get(54).getFirstName());
         Assertions.assertEquals("Name555", users.get(555).getFirstName());
         Assertions.assertEquals("Name999", users.get(999).getFirstName());
         Assertions.assertEquals("Name0", users.get(0).getFirstName());
+
     }
 
     @Test
@@ -57,7 +61,7 @@ class UserRepositoryTest {
 
         userFromDb.setBankCards(List.of(bankRepository.save(BankCard.builder()
                 .user(userFromDb)
-                .cardNumber(new BankCardGeneratorImpl().generateBankCard(16))
+                .cardNumber(new BankCardGeneratorImpl().generateBankCardNumber())
                 .build())));
         userFromDb.setFirstName("Name3.1");
 
@@ -114,7 +118,7 @@ class UserRepositoryTest {
                         .withFirstName("Name" + i)
                         .withUsername("Username" + i)
                         .withBankCards(List.of(bankRepository.save(BankCard.builder()
-                                .cardNumber(new BankCardGeneratorImpl().generateBankCard(16))
+                                .cardNumber(new BankCardGeneratorImpl().generateBankCardNumber())
                                 .build())))
                         .build());
             }
@@ -123,7 +127,7 @@ class UserRepositoryTest {
 
     @AfterEach
     void aVoid() {
-        mongoTemplate.dropCollection(COL_NAME);
-        mongoTemplate.dropCollection("bankCards");
+        mongoTemplate.dropCollection(usersCol);
+        mongoTemplate.dropCollection(cardsCol);
     }
 }
