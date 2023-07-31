@@ -19,18 +19,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
-
-    private final SecureCodeProxyService codeProxyService;
-
-    private final BankMapper bankMapper;
-
+    @Qualifier("userServiceImpl")
     @Autowired
-    public UserController(@Qualifier("userServiceImpl") UserService userService, SecureCodeProxyService codeProxyService, @Qualifier("userMapper") BankMapper bankMapper) {
-        this.userService = userService;
-        this.codeProxyService = codeProxyService;
-        this.bankMapper = bankMapper;
-    }
+    private UserService userService;
+    @Autowired
+    private SecureCodeProxyService codeProxyService;
+    @Qualifier("userMapper")
+    @Autowired
+    private BankMapper bankMapper;
+
 
     @GetMapping("/{id}")
     @PreAuthorize("#id == authentication.name or hasAuthority('ADMIN')")

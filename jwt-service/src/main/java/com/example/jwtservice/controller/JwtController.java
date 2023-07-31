@@ -26,7 +26,7 @@ public class JwtController {
         return new ResponseEntity<>(jwtService.generateJwt(authRequest.getUsername(), authRequest.getRole(), authRequest.getId()), HttpStatus.OK);
     }
 
-    @PostMapping("/validate")
+    @GetMapping("/validate")
     public ResponseEntity validateJwt(@RequestBody JwtToken jwtToken) {
         return ResponseEntity.ok(jwtService.validateToken(jwtToken.getToken()));
     }

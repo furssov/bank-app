@@ -17,7 +17,7 @@ public interface JwtProxyService {
     @PostMapping("/jwt/generate")
     String generateJwtToken(@RequestBody AuthRequest authRequest);
 
-    @PostMapping("/jwt/validate")
+    @GetMapping("/jwt/validate")
     ResponseEntity validateJwtToken(@RequestBody JwtToken jwtToken);
 
     @GetMapping (value = "/jwt/claims/{token}", produces = MediaType.APPLICATION_JSON_VALUE)
