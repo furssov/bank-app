@@ -2,7 +2,7 @@ package com.example.usersservice.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public abstract class BankException extends Exception{
+public abstract class BankException extends RuntimeException{
     private HttpStatus httpStatus;
 
     public BankException(String message, HttpStatus httpStatus) {

@@ -1,11 +1,11 @@
-package com.example.usersservice.validators;
+package com.example.usersservice.validators.impl;
 
-import com.example.usersservice.exceptions.CardReleaseException;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.gen.BankCardGenerator;
+import com.example.usersservice.exceptions.ext.CardReleaseException;
+import com.example.usersservice.exceptions.ext.TransferMoneyException;
 import com.example.usersservice.models.BankCard;
-import com.example.usersservice.models.CardCurrency;
 import com.example.usersservice.models.User;
+import com.example.usersservice.validators.BankCardValidator;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class BankCardValidatorImpl implements BankCardValidator{
+public class BankCardValidatorImpl implements BankCardValidator {
     @Override
     public boolean validateUserBankCard(User user, BankCard bc) throws CardReleaseException {
         List<BankCard> bankCards = user.getBankCards();
@@ -24,10 +24,8 @@ public class BankCardValidatorImpl implements BankCardValidator{
             return false;
         }
         else {
-            if (bankCards.stream().anyMatch(bankCard -> {
-                return bankCard.getCardCurrency().equals(bc.getCardCurrency());
-            })) {
-                throw new CardReleaseException("You already have a "+ bc.getCardCurrency() +" card");
+            if (bankCards.stream().anyMatch(bankCard -> bankCard.getCardCurrency().equals(bc.getCardCurrency()))) {
+                throw new CardReleaseException("You already have a "+ bc.getCardCurrency() +" card", HttpStatus.BAD_REQUEST);
             }
             return true;
         }

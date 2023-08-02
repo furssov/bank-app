@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
@@ -44,7 +45,7 @@ public class User {
     private String password;
 
     @DBRef
-    private List<BankCard> bankCards;
+    private List<BankCard> bankCards = new ArrayList<>();
 
     @Field
     @NotNull

@@ -1,14 +1,12 @@
 package com.example.usersservice.services.impl;
 
-import com.example.usersservice.exceptions.BankCardException;
-import com.example.usersservice.exceptions.CardReleaseException;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.exceptions.UserException;
-import com.example.usersservice.feigns.SecureCodeProxyService;
+import com.example.usersservice.exceptions.ext.BankCardException;
+import com.example.usersservice.exceptions.ext.CardReleaseException;
+import com.example.usersservice.exceptions.ext.TransferMoneyException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.feigns.TransferMoneyProxyService;
 import com.example.usersservice.gen.BankCardGenerator;
 import com.example.usersservice.models.BankCard;
-import com.example.usersservice.models.CardCurrency;
 import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
 import com.example.usersservice.repos.BankRepository;
@@ -52,11 +50,16 @@ public class BankServiceImpl implements BankService {
     public boolean cardRelease(BankCard bankCard) throws UserException, CardReleaseException {
         User user = getAuthorized();
         generateAndValidateCardAttributes(bankCard);
-        //TODO
-        // Necessary to think about if some users will have the same bank card number
         mapUserAndBankCard(user, bankCard);
         return true;
 
+    }
+
+    @Override
+    public BankCard findBankCardByCardNumber(String cardNumber) throws Throwable {
+        return bankRepository.findBankCardByCardNumber(cardNumber).orElseThrow(() ->
+                new BankCardException("There is no any bank card by inputted card number")
+        );
     }
 
     private BankCard generateAndValidateCardAttributes(BankCard bc) throws CardReleaseException, UserException {
@@ -74,7 +77,7 @@ public class BankServiceImpl implements BankService {
             return bc;
         }
         else {
-            throw new CardReleaseException("Sorry, you already have such card!");
+            throw new CardReleaseException("Sorry, you already have such card!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -83,15 +86,6 @@ public class BankServiceImpl implements BankService {
             bankRepository.save(bankCard);
             user.getBankCards().add(bankCard);
             repository.save(user);
-    }
-
-
-
-    @Override
-    public BankCard findBankCardByCardNumber(String cardNumber) throws Throwable {
-        return bankRepository.findBankCardByCardNumber(cardNumber).orElseThrow(() ->
-                new BankCardException("There is no any bank card by inputted card number")
-        );
     }
 
     private User getAuthorized() throws UserException {

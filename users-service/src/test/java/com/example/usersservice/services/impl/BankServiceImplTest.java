@@ -1,8 +1,7 @@
 package com.example.usersservice.services.impl;
 
-import com.example.usersservice.exceptions.CardReleaseException;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.CardReleaseException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.feigns.TransferMoneyProxyService;
 import com.example.usersservice.gen.BankCardGenerator;
 import com.example.usersservice.models.BankCard;
@@ -12,7 +11,6 @@ import com.example.usersservice.models.User;
 import com.example.usersservice.repos.BankRepository;
 import com.example.usersservice.repos.UserRepository;
 import com.example.usersservice.services.BankService;
-import com.example.usersservice.validators.BankCardValidator;
 import com.springboot.conversion.beans.CurrencyConversionBean;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

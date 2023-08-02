@@ -1,8 +1,9 @@
-package com.example.usersservice.mappers;
+package com.example.usersservice.mappers.impl;
 
 import com.example.usersservice.dto.UserCreateRequest;
 import com.example.usersservice.dto.UserRequest;
 import com.example.usersservice.dto.UserUpdateRequest;
+import com.example.usersservice.mappers.BankMapper;
 import com.example.usersservice.models.Role;
 import com.example.usersservice.models.User;
 import org.springframework.stereotype.Component;

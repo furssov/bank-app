@@ -1,7 +1,7 @@
 package com.example.usersservice.controllers;
 
 import com.example.usersservice.dto.*;
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.feigns.SecureCodeProxyService;
 import com.example.usersservice.mappers.BankMapper;
 import com.example.usersservice.models.User;
@@ -30,7 +30,7 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("#id == authentication.name or hasAuthority('ADMIN')")
+    @PreAuthorize("#id == authentication.name")
     public ResponseEntity<User> findById(@PathVariable String id) throws UserException {
         return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
     }
@@ -42,6 +42,7 @@ public class UserController {
         }
         return new ResponseEntity<>(userService.save((User) bankMapper.map(userDTO)), HttpStatus.CREATED);
     }
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("#id == authentication.name")

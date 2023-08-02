@@ -1,13 +1,7 @@
 package com.example.usersservice.services;
 
-import com.example.usersservice.dto.BankCardDto;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.exceptions.UserException;
-import com.example.usersservice.models.BankCard;
-import com.example.usersservice.models.TransferMoneyResult;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.models.User;
-
-import java.math.BigDecimal;
 
 
 public interface UserService {

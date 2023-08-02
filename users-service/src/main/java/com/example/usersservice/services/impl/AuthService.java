@@ -1,7 +1,7 @@
 package com.example.usersservice.services.impl;
 
 import com.example.jwtservice.models.AuthRequest;
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.feigns.JwtProxyService;
 import com.example.usersservice.jwt.JwtAuthentication;
 import com.example.usersservice.jwt.JwtRequest;

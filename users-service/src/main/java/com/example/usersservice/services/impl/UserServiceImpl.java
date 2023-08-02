@@ -1,26 +1,18 @@
 package com.example.usersservice.services.impl;
 
 import com.example.usersservice.dto.SecureCodeResponse;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.feigns.SecureCodeProxyService;
-import com.example.usersservice.feigns.TransferMoneyProxyService;
-import com.example.usersservice.gen.BankCardGenerator;
-import com.example.usersservice.models.BankCard;
-import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
 import com.example.usersservice.repos.BankRepository;
 import com.example.usersservice.repos.UserRepository;
 import com.example.usersservice.services.UserService;
-import com.example.usersservice.validators.BankCardValidator;
-import com.springboot.conversion.beans.CurrencyConversionBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -47,9 +39,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public boolean deleteById(String id, String secureCode) throws UserException {
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()) {
-            User userDB = user.get();
+        User userDB = repository.findById(id).get();
             String userEmail = userDB.getUsername();
             SecureCodeResponse scr = codeProxyService.getSecureCode(userEmail);
             if (validateEmailAndCode(userEmail, scr.getReceiverEmail(), secureCode, scr.getSecureCode())) {
@@ -61,9 +51,6 @@ public class UserServiceImpl implements UserService{
                 return true;
             }
             else throw new UserException("Wrong secure code", HttpStatus.BAD_REQUEST);
-        }
-        else throw new UserException("No such user", HttpStatus.BAD_REQUEST);
-
     }
 
     @Override

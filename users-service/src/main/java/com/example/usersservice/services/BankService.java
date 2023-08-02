@@ -1,8 +1,7 @@
 package com.example.usersservice.services;
 
-import com.example.usersservice.exceptions.CardReleaseException;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.CardReleaseException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.TransferMoneyResult;
 

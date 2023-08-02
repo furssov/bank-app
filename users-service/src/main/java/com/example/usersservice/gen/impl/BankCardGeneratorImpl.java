@@ -1,5 +1,6 @@
-package com.example.usersservice.gen;
+package com.example.usersservice.gen.impl;
 
+import com.example.usersservice.gen.BankCardGenerator;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;

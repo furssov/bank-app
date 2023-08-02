@@ -1,22 +1,11 @@
 package com.example.usersservice.services.impl;
 
 import com.example.usersservice.dto.SecureCodeResponse;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.feigns.SecureCodeProxyService;
-import com.example.usersservice.feigns.TransferMoneyProxyService;
-import com.example.usersservice.gen.BankCardGenerator;
-import com.example.usersservice.jwt.JwtAuthentication;
-import com.example.usersservice.mappers.UserMapper;
-import com.example.usersservice.models.BankCard;
-import com.example.usersservice.models.CardCurrency;
-import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.models.User;
-import com.example.usersservice.repos.BankRepository;
 import com.example.usersservice.repos.UserRepository;
 import com.example.usersservice.services.UserService;
-import com.example.usersservice.validators.BankCardValidator;
-import com.springboot.conversion.beans.CurrencyConversionBean;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,12 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserServiceImplTest {

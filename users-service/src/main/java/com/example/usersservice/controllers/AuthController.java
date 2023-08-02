@@ -1,6 +1,6 @@
 package com.example.usersservice.controllers;
 
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.jwt.JwtRequest;
 import com.example.usersservice.jwt.JwtResponse;
 import com.example.usersservice.services.impl.AuthService;

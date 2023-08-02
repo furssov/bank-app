@@ -1,6 +1,7 @@
-package com.example.usersservice.mappers;
+package com.example.usersservice.mappers.impl;
 
 import com.example.usersservice.dto.BankCardDto;
+import com.example.usersservice.mappers.BankMapper;
 import com.example.usersservice.models.BankCard;
 import org.springframework.stereotype.Component;
 

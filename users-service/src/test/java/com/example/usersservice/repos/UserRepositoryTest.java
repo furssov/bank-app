@@ -1,6 +1,6 @@
 package com.example.usersservice.repos;
 
-import com.example.usersservice.gen.BankCardGeneratorImpl;
+import com.example.usersservice.gen.impl.BankCardGeneratorImpl;
 import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.User;
 import org.junit.jupiter.api.AfterEach;

@@ -1,15 +1,13 @@
 package com.example.usersservice.controllers;
 
 import com.example.usersservice.dto.BankCardDto;
-import com.example.usersservice.exceptions.CardReleaseException;
+import com.example.usersservice.exceptions.ext.CardReleaseException;
 import com.example.usersservice.mappers.BankMapper;
-import com.example.usersservice.exceptions.TransferMoneyException;
-import com.example.usersservice.exceptions.UserException;
+import com.example.usersservice.exceptions.ext.UserException;
 import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.Transfer;
 import com.example.usersservice.models.TransferMoneyResult;
 import com.example.usersservice.services.BankService;
-import com.example.usersservice.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/operations")
 public class BankController {
-
 
     private final BankService bankService;
 
@@ -43,7 +40,7 @@ public class BankController {
     @PostMapping("/bank-card")
     public ResponseEntity createBankCard(@RequestBody @Valid BankCardDto bankCardDto, Errors errors) throws CardReleaseException, UserException {
         if (errors.hasErrors()) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(errors.getAllErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST);
         }
         return bankService.cardRelease((BankCard) bankMapper.map(bankCardDto)) ? new ResponseEntity(HttpStatus.OK) : new ResponseEntity(HttpStatus.BAD_REQUEST);
 

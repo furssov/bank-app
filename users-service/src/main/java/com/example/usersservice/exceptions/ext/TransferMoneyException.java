@@ -1,8 +1,9 @@
-package com.example.usersservice.exceptions;
+package com.example.usersservice.exceptions.ext;
 
+import com.example.usersservice.exceptions.BankException;
 import org.springframework.http.HttpStatus;
 
-public class TransferMoneyException extends BankException{
+public class TransferMoneyException extends BankException {
 
     public TransferMoneyException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
