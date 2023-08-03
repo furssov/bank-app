@@ -3,7 +3,6 @@ package com.example.usersservice.repos;
 import com.example.usersservice.gen.BankCardGenerator;
 import com.example.usersservice.models.BankCard;
 import com.example.usersservice.models.CardCurrency;
-import com.mongodb.DuplicateKeyException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,8 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +24,12 @@ import java.util.Optional;
 
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BankRepositoryTest {
 
     private final BankRepository bankRepository;
     private final MongoTemplate mongoTemplate;
     private final BankCardGenerator bankCardGenerator;
-
     @Value("${mongo.name.cards}")
     private String cardsCol;
 
@@ -38,9 +41,25 @@ class BankRepositoryTest {
         this.bankCardGenerator = bankCardGenerator;
     }
 
-    @AfterEach
+    @BeforeEach
     void setUp() {
-        mongoTemplate.dropCollection(cardsCol);
+        mongoTemplate.remove(new Query(), cardsCol);
+    }
+
+    @Test
+    void createTheSame() {
+        String dup = bankCardGenerator.generateBankCardNumber();
+        dup.intern();
+        BankCard bankCard = new BankCard();
+        bankCard.setCardNumber(dup);
+
+        bankRepository.save(bankCard);
+
+        BankCard bankCard1 = new BankCard();
+        bankCard1.setCardNumber(dup);
+       Assertions.assertThrows(DuplicateKeyException.class, () ->
+               bankRepository.save(bankCard1)
+       );
     }
 
     @Test

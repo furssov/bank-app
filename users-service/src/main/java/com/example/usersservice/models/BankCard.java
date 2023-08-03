@@ -25,7 +25,7 @@ public class BankCard {
     private String id;
 
     @CreditCardNumber
-    @Field
+    @Indexed(unique = true)
     private String cardNumber;
 
     @Field

@@ -58,7 +58,7 @@ public class BankServiceImpl implements BankService {
     @Override
     public BankCard findBankCardByCardNumber(String cardNumber) throws Throwable {
         return bankRepository.findBankCardByCardNumber(cardNumber).orElseThrow(() ->
-                new BankCardException("There is no any bank card by inputted card number")
+                new BankCardException("There is no any bank card by inputted card number", HttpStatus.BAD_REQUEST)
         );
     }
 
@@ -99,7 +99,7 @@ public class BankServiceImpl implements BankService {
                 .stream()
                 .parallel()
                 .filter(bankCard -> bankCard.getCardNumber().equals(card))
-                .findAny().orElseThrow(() -> new BankCardException("You don't have this card"));
+                .findAny().orElseThrow(() -> new BankCardException("You don't have this card", HttpStatus.BAD_REQUEST));
     }
 
     private TransferMoneyResult transfer(BankCard bankCardSender, BankCard bankCardReceiver, CurrencyConversionBean currencyConversionBean) throws TransferMoneyException {
@@ -115,7 +115,7 @@ public class BankServiceImpl implements BankService {
             return getTransferMoneyResult(bankCardSender, bankCardReceiver, currencyConversionBean);
         }
         else {
-            throw new TransferMoneyException("Not enough money on your card");
+            throw new TransferMoneyException("Not enough money on your card", HttpStatus.BAD_REQUEST);
         }
 
     }

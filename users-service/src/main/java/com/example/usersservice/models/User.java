@@ -32,7 +32,7 @@ public class User {
     @NotBlank
     private String secondName;
 
-    @Field
+    @Indexed(unique = true)
     @NotBlank
     @Size(min = 2, max = 30, message = "username min size is 2, max is 30")
     @Email(message = "username must be an email!")
